@@ -1,0 +1,47 @@
+---
+import { concepts } from '../data/concepts.js';
+---
+
+<section id="concepts" class="section section-muted">
+  <div class="container">
+    <p class="section-kicker mono">Phase 7</p>
+    <h2>30 Concepts — From Problems to Products</h2>
+    <p class="lead">Click any card to open the full concept brief. Click <strong>+ Shortlist</strong> to save your favourites.</p>
+
+    <div class="grid grid-2 concepts-grid">
+      {
+        concepts.map((c) => (
+          <details class="card concept-card" id={`concept-${c.id}`}>
+            <summary>
+              <div class="concept-head">
+                <span class="mono concept-num">{String(c.id).padStart(2, '0')}</span>
+                <div>
+                  <h3>{c.name}</h3>
+                  <p>{c.tagline}</p>
+                </div>
+                <span class="badge">{c.theme}</span>
+              </div>
+            </summary>
+            <div class="concept-body">
+              <dl>
+                <dt>Target</dt>
+                <dd>{c.target}</dd>
+                <dt>Problem</dt>
+                <dd>{c.problem}</dd>
+                <dt>Solution</dt>
+                <dd>{c.solution}</dd>
+                <dt>Tech</dt>
+                <dd>{c.tech}</dd>
+                <dt>Impact</dt>
+                <dd>{c.impact}</dd>
+                <dt>Risk</dt>
+                <dd>{c.risk}</dd>
+              </dl>
+              <button class="btn btn-secondary shortlist-btn" data-id={c.id}>+ Shortlist</button>
+            </div>
+          </details>
+        ))
+      }
+    </div>
+  </div>
+</section>

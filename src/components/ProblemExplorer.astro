@@ -1,0 +1,70 @@
+---
+import { problems, sectors } from '../data/problems.js';
+const sectorOptions = sectors;
+---
+
+<section id="problems" class="section">
+  <div class="container">
+    <p class="section-kicker mono">Phase 5</p>
+    <h2>50 Problems — Interactive Radar</h2>
+    <p class="lead">Use the filters to navigate intentionally. Each row is a broken workflow with a technology opportunity.</p>
+
+    <div class="toolbar">
+      <input id="problem-search" type="search" placeholder="Search problems…" />
+      <select id="problem-sector">
+        <option value="">All sectors</option>
+        {
+          sectorOptions.map(s => <option value={s}>{s}</option>)
+        }
+      </select>
+    </div>
+
+    <div class="table-wrap">
+      <table id="problem-table">
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Sector</th>
+            <th>Problem</th>
+            <th>Current Workflow</th>
+            <th>Tech Opportunity</th>
+          </tr>
+        </thead>
+        <tbody>
+          {
+            problems.map((p) => (
+              <tr data-sector={p.sector}>
+                <td class="mono">{p.id}</td>
+                <td><span class="badge">{p.sector}</span></td>
+                <td>{p.problem}</td>
+                <td>{p.workflow}</td>
+                <td class="mono">{p.tech}</td>
+              </tr>
+            ))
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<script>
+  const search = document.getElementById('problem-search');
+  const sector = document.getElementById('problem-sector');
+  const rows = document.querySelectorAll('#problem-table tbody tr');
+
+  function filterProblems() {
+    const q = search.value.toLowerCase();
+    const s = sector.value;
+
+    rows.forEach((row) => {
+      const text = row.textContent.toLowerCase();
+      const matchesQuery = !q || text.includes(q);
+      const matchesSector = !s || row.dataset.sector === s;
+      row.style.display = matchesQuery && matchesSector ? '' : 'none';
+    });
+  }
+
+  search.addEventListener('input', filterProblems);
+  sector.addEventListener('change', filterProblems);
+</script>

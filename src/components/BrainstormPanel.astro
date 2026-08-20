@@ -1,0 +1,34 @@
+---
+import { concepts } from '../data/concepts.js';
+---
+
+<aside id="brainstorm" class="sidebar-right">
+  <div class="card panel">
+    <p class="section-kicker mono">Brainstorm Studio</p>
+
+    <div class="panel-section">
+      <h3>Private Notes</h3>
+      <select id="note-concept">
+        {
+          concepts.map((c) => (
+            <option value={c.id}>{String(c.id).padStart(2, '0')}. {c.name}</option>
+          ))
+        }
+      </select>
+      <textarea id="note-text" rows="3" placeholder="Why would this win? What's the demo?"></textarea>
+      <button id="save-note" class="btn btn-primary">Save note</button>
+      <div id="note-list" class="note-list"></div>
+    </div>
+
+    <hr class="panel-rule" />
+
+    <div class="panel-section">
+      <h3>Public Notes</h3>
+      <input id="pub-name" type="text" placeholder="Your name" />
+      <textarea id="pub-text" rows="3" placeholder="Share an insight with your team…"></textarea>
+      <button id="post-public" class="btn btn-primary">Post publicly</button>
+      <div id="public-list" class="note-list"></div>
+      <p class="micro">Demo mode: public notes are stored in this browser. Connect Supabase/Firebase for shared persistence.</p>
+    </div>
+  </div>
+</aside>

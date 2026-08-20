@@ -1,0 +1,115 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const rejectList = [
+  ['Generic AI chatbot', 'Vague, not deployable, judges have seen 300.'],
+  ['Crop disease detection app', 'Every team with a CNN and a camera will build this.'],
+  ['Women’s safety SOS app', 'Built 10,000 times. No differentiation.'],
+  ['Smart attendance using face recognition', 'Commercially solved. Zero novelty.'],
+  ['Smart waste bin with IoT', 'Hardware version of a dashboard.'],
+  ['Traffic congestion prediction', 'Every ML student defaults here.'],
+  ['Generic telemedicine platform', 'Solved by Practo, eSanjeevani, Apollo.'],
+  ['Blockchain certificate verification', 'Over-cited, rarely justified, hard to demo.'],
+  ['Generic tourism recommendation', 'Solved by Google Maps + Tripadvisor.'],
+  ['Mental health chatbot', 'Generic, hard to validate, liability concerns.']
+];
+
+const winners = [
+  {
+    title: 'Language Translation for Station Announcements',
+    ministry: 'Railways / SIH1348',
+    problem: 'Live announcements in 1–2 languages; passengers miss critical info.',
+    solution: 'Translate live announcements into regional languages and call passengers automatically.',
+    insight: 'Last-mile accessibility inside existing infrastructure.'
+  },
+  {
+    title: 'Unified Course Design Platform',
+    ministry: 'AICTE / SIH1465',
+    problem: 'Course structures fragmented across colleges.',
+    solution: 'One platform to design, organize, and share course structures.',
+    insight: 'Workflow unification, not AI, was the innovation.'
+  },
+  {
+    title: 'JalSamadhan',
+    ministry: 'Jal Shakti / SIH1291',
+    problem: 'Water complaints sit unrouted.',
+    solution: 'Citizens report → auto-classify → route → track to closure.',
+    insight: 'The broken link was everything after the report.'
+  },
+  {
+    title: 'Face Recognition for Secure Areas',
+    ministry: 'DRDO',
+    problem: 'Manual guard checks at secure premises.',
+    solution: 'Automated identity tracking from camera feeds.',
+    insight: 'Full operational chain, not just detection.'
+  }
+];
+---
+
+<Layout>
+  <section class="page-hero">
+    <div class="container">
+      <p class="section-kicker mono">Playbook</p>
+      <h1>Reverse-engineered SIH winning patterns</h1>
+      <p class="lead">Operational credibility beats tech novelty. Winners close the loop: detect → classify → route → act → verify → learn.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2>Winning formula</h2>
+      <div class="formula-card">
+        <pre class="mono">Govt workflow exists
++ Breaks at scale (manual / fragmented)
++ Standardize intake → classify → route → act → verify → learn
++ Demo closes the workflow
++ Integration story exists (even if mocked)
++ Metrics are obvious</pre>
+      </div>
+
+      <h2>What judges are tired of</h2>
+      <div class="grid grid-2 reject-grid">
+        {rejectList.map(([name, reason]) => (
+          <div class="card reject-card">
+            <h3>{name}</h3>
+            <p>{reason}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section section-muted">
+    <div class="container">
+      <h2>Winner deconstructions</h2>
+      <div class="grid grid-2">
+        {winners.map((w) => (
+          <details class="card winner-card">
+            <summary>
+              <span class="mono">▸</span> {w.title}
+            </summary>
+            <div class="winner-body">
+              <p><strong>{w.ministry}</strong></p>
+              <p>{w.problem}</p>
+              <p><strong>Solution:</strong> {w.solution}</p>
+              <p><strong>Insight:</strong> {w.insight}</p>
+            </div>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2>Where winners hide</h2>
+      <p class="lead">After the complaint, after the asset, after the inspection, after the portal exists.</p>
+      <ul class="stat-list">
+        <li><strong>After the complaint</strong><br />Verify closure, prevent fake closures.</li>
+        <li><strong>After the asset</strong><br />Keep it functional with O&M workflows.</li>
+        <li><strong>After the inspection</strong><br />Standardize evidence + auditability.</li>
+        <li><strong>After the portal</strong><br />Make last-mile users actually adopt it.</li>
+      </ul>
+    </div>
+  </section>
+</Layout>

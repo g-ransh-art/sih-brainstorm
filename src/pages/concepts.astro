@@ -1,0 +1,77 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { concepts } from '../data/concepts.js';
+
+const top5 = concepts.slice().sort((a, b) => b.score - a.score).slice(0, 5);
+---
+
+<Layout>
+  <section class="page-hero">
+    <div class="container">
+      <p class="section-kicker mono">Phase 7</p>
+      <h1>30 concepts from broken workflows</h1>
+      <p class="lead">Each concept is a full product workflow, not a feature. Click to expand, minimize, and shortlist.</p>
+    </div>
+  </section>
+
+  <section class="section section-muted">
+    <div class="container">
+      <h2>Recommended top 5</h2>
+      <div class="grid grid-2">
+        {top5.map((c) => (
+          <div class="card score-card">
+            <div class="score-top">
+              <span class="badge">{c.theme}</span>
+              <span class="score mono">{c.score}</span>
+            </div>
+            <h3>{c.name}</h3>
+            <p>{c.tagline}</p>
+            <a href={`/concepts/#concept-${c.id}`} class="btn btn-ghost btn-small">Expand</a>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <h2>All concepts</h2>
+      <div class="grid grid-2 concepts-grid">
+        {concepts.map((c) => (
+          <details class="card concept-card" id={`concept-${c.id}`}>
+            <summary>
+              <div class="concept-head">
+                <span class="mono concept-num">{c.id}</span>
+                <div>
+                  <h3>{c.name}</h3>
+                  <p>{c.tagline}</p>
+                </div>
+                <span class="badge">{c.theme}</span>
+                <span class="score mono">{c.score}</span>
+              </div>
+            </summary>
+            <div class="concept-body">
+              <dl>
+                <dt>User</dt><dd>{c.user}</dd>
+                <dt>Problem</dt><dd>{c.problem}</dd>
+                <dt>Current workflow</dt><dd>{c.workflow}</dd>
+                <dt>Core insight</dt><dd>{c.insight}</dd>
+                <dt>Solution</dt><dd>{c.solution}</dd>
+                <dt>Why existing fails</dt><dd>{c.whyFails}</dd>
+                <dt>Innovation</dt><dd>{c.innovation}</dd>
+                <dt>Tech</dt><dd>{c.tech}</dd>
+                <dt>MVP</dt><dd>{c.mvp}</dd>
+                <dt>Impact</dt><dd>{c.impact}</dd>
+                <dt>Risk</dt><dd>{c.risk}</dd>
+              </dl>
+              <div class="concept-actions">
+                <button class="btn btn-secondary btn-small shortlist-btn" data-shortlist={c.id}>★ Shortlist</button>
+                <span class="micro">Score: {c.score}/100</span>
+              </div>
+            </div>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+</Layout>

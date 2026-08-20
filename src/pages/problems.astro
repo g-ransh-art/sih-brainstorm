@@ -1,0 +1,81 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { problems, themes } from '../data/problems.js';
+---
+
+<Layout>
+  <section class="page-hero">
+    <div class="container">
+      <p class="section-kicker mono">Phase 5</p>
+      <h1>50 broken government workflows</h1>
+      <p class="lead">Each row is a real govenment workflow that breaks at scale. Shortlist the pain points.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container">
+      <div class="toolbar">
+        <input id="problem-search" type="search" placeholder="Search problems…" />
+        <select id="problem-theme">
+          <option value="">All themes</option>
+          {themes.map((t) => <option value={t}>{t}</option>)}
+        </select>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Theme</th>
+              <th>User</th>
+              <th>Problem</th>
+              <th>Current workflow</th>
+              <th>Tech opportunity</th>
+              <th>Save</th>
+            </tr>
+          </thead>
+          <tbody>
+            {problems.map((p) => (
+              <tr id={`row-${p.id}`} data-theme={p.theme}>
+                <td class="mono">{p.id}</td>
+                <td><span class="badge">{p.theme}</span></td>
+                <td>{p.user}</td>
+                <td>{p.problem}</td>
+                <td>{p.workflow}</td>
+                <td class="mono">{p.tech}</td>
+                <td>
+                  <button
+                    class="btn btn-small shortlist-btn"
+                    data-shortlist={p.id}
+                    aria-label={`Shortlist ${p.id}`}
+                  >★</button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    const search = document.getElementById('problem-search');
+    const themeSelect = document.getElementById('problem-theme');
+    const rows = document.querySelectorAll('#problem-table tbody tr');
+
+    function filter() {
+      const q = search.value.toLowerCase();
+      const t = themeSelect.value;
+      rows.forEach((row) => {
+        const text = row.textContent.toLowerCase();
+        const matchQ = !q || text.includes(q);
+        const matchT = !t || row.dataset.theme === t;
+        row.style.display = matchQ && matchT ? '' : 'none';
+      });
+    }
+
+    search.addEventListener('input', filter);
+    themeSelect.addEventListener('change', filter);
+  </script>
+</Layout>

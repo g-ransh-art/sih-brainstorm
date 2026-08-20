@@ -1,0 +1,135 @@
+---
+import Layout from '../layouts/Layout.astro';
+import { concepts } from '../data/concepts.js';
+---
+
+<Layout>
+  <section class="page-hero">
+    <div class="container">
+      <p class="section-kicker mono">Brainstorm Studio</p>
+      <h1>Public notes + final decision</h1>
+      <p class="lead">Leave public notes, then let the weighted picker choose your next build.</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="container grid-2">
+      <!-- Public notes -->
+      <div class="card">
+        <h2>Public notes</h2>
+        <select id="pub-idea">
+          <option value="">General</option>
+          {concepts.map((c) => <option value={c.id}>{c.id} — {c.name}</option>)}
+        </select>
+        <input id="pub-name" type="text" placeholder="Your name" />
+        <textarea id="pub-text" rows="3" placeholder="Share an insight or a risk…"></textarea>
+        <button id="post-public" class="btn btn-primary">Post public note</button>
+        <div id="public-list" class="note-list"></div>
+        <p class="micro">Demo: notes are stored in this browser. Replace with a database for real team persistence.</p>
+      </div>
+
+      <!-- Final decision dialog -->
+      <details class="card decision-dialog" open>
+        <summary>
+          <span class="mono">▾</span> Final Decision (click to minimize)
+        </summary>
+        <div class="decision-inner">
+          <p>Pick a weighted random idea from your shortlist. Higher SIH score = higher probability.</p>
+          <label class="check">
+            <input type="checkbox" id="use-shortlist" checked />
+            Use shortlist only
+          </label>
+          <button id="pick-idea" class="btn btn-primary">🎲 Generate idea</button>
+          <div id="idea-result"></div>
+        </div>
+      </details>
+    </div>
+  </section>
+
+  <script is:inline define:vars={{ concepts }}>
+    // ---------- Public notes ----------
+    const pubIdea = document.getElementById('pub-idea');
+    const pubName = document.getElementById('pub-name');
+    const pubText = document.getElementById('pub-text');
+    const postPublic = document.getElementById('post-public');
+    const publicList = document.getElementById('public-list');
+
+    let publicNotes = JSON.parse(localStorage.getItem('sih-public-notes') || '[]');
+
+    function renderPublicNotes() {
+      if (!publicList) return;
+      publicList.innerHTML = publicNotes.slice().reverse().map((n) => `
+        <div class="note-item">
+          ${n.ideaId ? `<span class="badge">${n.ideaId}</span>` : ''}
+          <span class="pub-author">${escapeHtml(n.author)}</span>
+          <span class="mono micro">${escapeHtml(n.time)}</span>
+          <p>${escapeHtml(n.text)}</p>
+        </div>
+      `).join('') || '<p class="micro">No public notes yet. Start the conversation.</p>';
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, (c) => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+      }[c]));
+    }
+
+    postPublic.addEventListener('click', () => {
+      const text = pubText.value.trim();
+      if (!text) return;
+      publicNotes.push({
+        ideaId: pubIdea.value,
+        author: pubName.value.trim() || 'Anonymous',
+        text,
+        time: new Date().toLocaleString()
+      });
+      localStorage.setItem('sih-public-notes', JSON.stringify(publicNotes));
+      pubText.value = '';
+      renderPublicNotes();
+    });
+
+    renderPublicNotes();
+
+    // ---------- Final weighted picker ----------
+    const pickBtn = document.getElementById('pick-idea');
+    const useShortlist = document.getElementById('use-shortlist');
+    const ideaResult = document.getElementById('idea-result');
+
+    function pickWeightedIdea() {
+      let pool = concepts;
+      if (useShortlist.checked) {
+        const stored = JSON.parse(localStorage.getItem('sih-shortlist') || '[]');
+        const ids = new Set(stored);
+        const conceptPool = concepts.filter((c) => ids.has(c.id));
+        if (conceptPool.length) pool = conceptPool;
+      }
+
+      const weights = pool.map((c) => c.score || 50);
+      const total = weights.reduce((a, b) => a + b, 0);
+      let r = Math.random() * total;
+      let chosen = pool[pool.length - 1];
+
+      for (let i = 0; i < pool.length; i++) {
+        r -= weights[i];
+        if (r <= 0) {
+          chosen = pool[i];
+          break;
+        }
+      }
+
+      ideaResult.innerHTML = `
+        <div class="idea-card">
+          <span class="badge">${escapeHtml(chosen.theme)}</span>
+          <span class="score mono">${chosen.score}</span>
+          <h3>${escapeHtml(chosen.id)} — ${escapeHtml(chosen.name)}</h3>
+          <p>${escapeHtml(chosen.tagline)}</p>
+          <p class="mono micro">${escapeHtml(chosen.tech)}</p>
+          <p>${escapeHtml(chosen.problem)}</p>
+        </div>
+      `;
+    }
+
+    pickBtn.addEventListener('click', pickWeightedIdea);
+    pickWeightedIdea();
+  </script>
+</Layout>

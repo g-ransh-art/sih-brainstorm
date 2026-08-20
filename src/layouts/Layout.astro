@@ -1,15 +1,16 @@
 ---
 import '../styles/global.css';
 
-interface Props {
-  title?: string;
-  description?: string;
-}
+const { title = 'Smart India Hackathon' } = Astro.props;
+const path = Astro.url.pathname;
 
-const {
-  title = 'Smart India Hackathon',
-  description = 'A brainstorm-ready master document for sih 2026.'
-} = Astro.props;
+const nav = [
+  { href: '/', label: 'Home' },
+  { href: '/playbook', label: 'Playbook' },
+  { href: '/problems', label: 'Problems' },
+  { href: '/concepts', label: 'Concepts' },
+  { href: '/brainstorm', label: 'Brainstorm' }
+];
 ---
 
 <!doctype html>
@@ -18,8 +19,6 @@ const {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{title}</title>
-    <meta name="description" content={description} />
-
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -30,24 +29,109 @@ const {
   <body>
     <header class="site-header">
       <div class="container header-inner">
-        <a href="#" class="logo">SIH<span>26</span></a>
+        <a href="/" class="logo">SIH<span>26</span></a>
         <nav class="nav">
-          <a href="#playbook">Playbook</a>
-          <a href="#problems">Problems</a>
-          <a href="#concepts">Concepts</a>
-          <a href="#brainstorm">Brainstorm</a>
+          {nav.map((item) => (
+            <a href={item.href} class:list={['nav-link', { active: path === item.href }]}>
+              {item.label}
+            </a>
+          ))}
         </nav>
-        <a href="#pick" class="btn btn-primary btn-small">Pick an idea</a>
       </div>
     </header>
 
-    <slot />
+    <div class="app-shell">
+      <aside class="side-left">
+        <div class="card">
+          <h4>Shortlist</h4>
+          <div data-shortlist-render></div>
+          <button id="reset-shortlist" class="btn btn-ghost btn-small">Reset</button>
+          <a href="/concepts" class="btn btn-primary btn-small">Open concepts</a>
+        </div>
+      </aside>
+
+      <main class="page-main">
+        <slot />
+      </main>
+    </div>
 
     <footer class="site-footer">
       <div class="container footer-inner">
-        <span>© 2026 · SIH Strategy OS</span>
-        <span class="mono">Built with Astro · Deploy on <a href="https://vercel.com">▲ Vercel</a></span>
+        <span>© 2026 · Smart India Hackathon</span>
+        <span class="mono">▲ Vercel · Astro</span>
       </div>
     </footer>
+
+    <script>
+      // ---------- Shared shortlist ----------
+      const LS_KEY = 'sih-shortlist';
+      let shortlist = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+
+      function save() {
+        localStorage.setItem(LS_KEY, JSON.stringify(shortlist));
+      }
+
+      function shortlistHref(id) {
+        return id.startsWith('C')
+          ? `/concepts/#concept-${id}`
+          : `/problems/#row-${id}`;
+      }
+
+      function renderShortlist() {
+        document.querySelectorAll('[data-shortlist-render]').forEach((el) => {
+          if (!shortlist.length) {
+            el.innerHTML = '<p class="micro">Nothing shortlisted yet.</p>';
+          } else {
+            el.innerHTML = shortlist
+              .map(
+                (id) => `
+                  <div class="shortlist-item">
+                    <a href="${shortlistHref(id)}">${id}</a>
+                    <button class="link-del" data-remove="${id}" aria-label="Remove">×</button>
+                  </div>`
+              )
+              .join('');
+          }
+        });
+
+        document.querySelectorAll('.shortlist-btn').forEach((btn) => {
+          const id = btn.dataset.shortlist;
+          if (shortlist.includes(id)) {
+            btn.textContent = '✓';
+            btn.classList.add('on');
+          } else {
+            btn.textContent = '★';
+            btn.classList.remove('on');
+          }
+        });
+      }
+
+      document.addEventListener('click', (e) => {
+        const add = e.target.closest('.shortlist-btn');
+        if (add) {
+          const id = add.dataset.shortlist;
+          if (!shortlist.includes(id)) shortlist.push(id);
+          save();
+          renderShortlist();
+          return;
+        }
+
+        const del = e.target.closest('.link-del');
+        if (del) {
+          shortlist = shortlist.filter((x) => x !== del.dataset.remove);
+          save();
+          renderShortlist();
+          return;
+        }
+
+        if (e.target.id === 'reset-shortlist') {
+          shortlist = [];
+          save();
+          renderShortlist();
+        }
+      });
+
+      renderShortlist();
+    </script>
   </body>
 </html>
